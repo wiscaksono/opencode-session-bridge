@@ -7,6 +7,9 @@ import {
   isRootSession,
   labelForDirectory,
   lastAssistantText,
+  parseAskInput,
+  parseReadInput,
+  peerVia,
   selectSession,
   sameDir,
 } from "../src/index.ts"
@@ -200,6 +203,56 @@ describe("selectSession", () => {
   })
   test("returns undefined for no match", () => {
     expect(selectSession(sessions, { target: "does-not-exist", references })).toBeUndefined()
+  })
+})
+
+describe("parseAskInput", () => {
+  test("rejects a missing target or message", () => {
+    expect(parseAskInput({})).toContain("target")
+    expect(parseAskInput(null)).toContain("target")
+    expect(parseAskInput({ target: "ses_a" })).toContain("message")
+    expect(parseAskInput({ target: "ses_a", message: "   " })).toContain("message")
+  })
+  test("trims and applies defaults", () => {
+    expect(parseAskInput({ target: " frontend-app ", message: " hi " })).toEqual({
+      target: "frontend-app",
+      message: "hi",
+      mode: "queue",
+      wait: true,
+      deliver: "user",
+      timeoutMs: 300_000,
+    })
+  })
+  test("reads explicit options", () => {
+    expect(
+      parseAskInput({ target: "b", message: "m", mode: "steer", wait: false, deliver: "synthetic", timeout_ms: 5_000 }),
+    ).toEqual({ target: "b", message: "m", mode: "steer", wait: false, deliver: "synthetic", timeoutMs: 5_000 })
+  })
+  test("ignores junk option values", () => {
+    const parsed = parseAskInput({ target: "b", message: "m", mode: "wat", deliver: 1, timeout_ms: "abc" })
+    expect(parsed).toMatchObject({ mode: "queue", deliver: "user", timeoutMs: 300_000 })
+  })
+})
+
+describe("parseReadInput", () => {
+  test("trims the session id", () => {
+    expect(parseReadInput({ sessionID: " ses_a " })).toBe("ses_a")
+  })
+  test("returns undefined for nothing usable", () => {
+    expect(parseReadInput({})).toBeUndefined()
+    expect(parseReadInput({ sessionID: 42 })).toBeUndefined()
+    expect(parseReadInput(undefined)).toBeUndefined()
+  })
+})
+
+describe("peerVia", () => {
+  test("keeps only string entries", () => {
+    expect(peerVia({ type: "user", metadata: { peer: { via: ["ses_a", 7, null] } } })).toEqual(["ses_a"])
+  })
+  test("returns undefined without a chain", () => {
+    expect(peerVia({ type: "user" })).toBeUndefined()
+    expect(peerVia({ type: "user", metadata: {} })).toBeUndefined()
+    expect(peerVia({ type: "user", metadata: { peer: { via: "ses_a" } } })).toBeUndefined()
   })
 })
 

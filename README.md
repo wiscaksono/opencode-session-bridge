@@ -111,10 +111,11 @@ A to B to C still works.
 ```sh
 bun install
 bun test
+bun run typecheck
 ```
 
-The tests cover the pure helpers (target resolution, reply extraction, message
-formatting, loop guards) and need no server.
+The tests cover the pure helpers (target resolution, reply extraction, tool input
+parsing, message formatting, loop guards) and need no server.
 
 ## License
 
