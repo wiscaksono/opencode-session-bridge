@@ -1,0 +1,34 @@
+{
+  "name": "opencode-session-bridge",
+  "version": "0.1.0",
+  "description": "OpenCode plugin that lets agents in different sessions talk to each other across projects.",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@opencode/client": "^2.0.0",
+    "@opencode/plugin": "^2.0.0"
+  },
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "agents",
+    "multi-agent",
+    "session"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wiscaksono/opencode-session-bridge.git"
+  },
+  "author": "Wisnu Wicaksono"
+}
